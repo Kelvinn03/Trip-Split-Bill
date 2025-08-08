@@ -8,17 +8,28 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var tripManager = TripManager()
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationView {
+            if tripManager.currentTrip == nil {
+                TripSetupView(tripManager: tripManager)
+            } else {
+                TripDashboardView(tripManager: tripManager)
+            }
         }
-        .padding()
+        .alert("Sync Error", isPresented: .constant(tripManager.syncError != nil)) {
+            Button("OK") {
+                tripManager.syncError = nil
+            }
+        } message: {
+            Text(tripManager.syncError ?? "")
+        }
     }
 }
 
-#Preview {
-    ContentView()
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
 }
